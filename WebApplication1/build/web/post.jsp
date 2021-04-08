@@ -24,17 +24,27 @@
             <div class="container blog_form">
                 <h5 class="display-4">Add your blog here</h5>
                 <hr class="style-two">
-                <form id="addPostForm" action="AddPostServlet.java"  method="post">
+                
+                <!--FORM-->
+                <form id="addPostForm" action="AddPostServlet"  method="post">
                     <div class="form-group">
-                    <select>
+                    <select class="form-control" name="cid">
+                        <!--getting data from database from category table and showing it in the options-->
                         <option selected disabled>---Select Category---</option>
                         <% 
-                        PostDAO postd=new PostDAO(ConnectionProvider.getConnection());
-                        ArrayList<Category> list=postd.getAllCategories();
-                        for(Category c:list)
-                        {
+                            //Created object of PostDAO nad passed connection in its constructor
+                            PostDAO postd=new PostDAO(ConnectionProvider.getConnection());
+                            
+                            //Created an Array List and called getAllCategories function
+                            //getAllCategories :- Executes a quesry to get all the rows from category table 
+                            //and returns a list of category objects
+                            ArrayList<Category> list=postd.getAllCategories();
+                            
+                            //loop around the list of categories and print the name in the place of options
+                            for(Category c:list)
+                            {
                         %>   
-                        <option values="<%= c.getCid()%>"><%=c.getName()%></option>
+                        <option value="<%=c.getCid()%>"><%=c.getName()%></option>
                         <%
                             }
                         %>
@@ -62,36 +72,41 @@
             </div>
         </div>
         
-        <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+        <!--<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>-->-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>-->
         <!--Adding blogs to database-->
-        <!--javascript-->
+        <!--javascript add post JS-->
         <script>
             $(document).ready(function(e){
-                $("#addPostForm").on("submit",function(e){
-                   //this code gets called when form is submitted 
-                   e.preventDefault();
-                   console.log("you have clicked on submit");
-                   //form is the new variable in which the form data will be captured
-                   let form=new FormData(this);
-                   
-                   //now requesting to server using ajax
-                   $.ajax(
-                           url:"AddPostServlet",
-                           type:"POST",
-                           data:"form",
-                           success: function(data, textStatus, jqXHR){
-                               //success
-                           },
-                           error: function(jqXHR, textStatus, errorThrown){
-                               //error
-                           },
-                           processData:false,
-                           contentType:false
-                })
-            })
+                //Applying listen to the form 
+                $("#addPostForm").on("submit", function(event){
+                    //this code gets called when form is sun=bmitted
+                    event.preventDefault();
+                    console.log("you have submitted")
+                    let form=new FormData(this);
+                    
+                    //now requesting to server
+                    //submitting the form AddPostServlet that handles the database job
+                    $.ajax({
+                        url : "AddPostServlet",
+                        type:'POST',
+                        data:form,
+                        success: function(data, textStatus, jqXHR){
+                            //success..
+                            console.log(data);
+                        },
+                        error: function(jqXHR, textStatus, errorThrown){
+                            //error....
+                            console.log("Error");
+                        },
+                        processData: false,
+                        contentType:false
+                    });
+                });
+               
+            });
         </script>
                     
     </body>

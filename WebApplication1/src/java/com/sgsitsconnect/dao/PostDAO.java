@@ -12,6 +12,7 @@ package com.sgsitsconnect.dao;
 import java.util.*;
 import java.sql.*;
 import com.sgsitsconnect.entities.Category;
+import com.sgsitsconnect.entities.Post;
 public class PostDAO {
     Connection con;
 
@@ -43,4 +44,24 @@ public class PostDAO {
         }
         return list;
     }
+    
+    public boolean savePost(Post p){
+        boolean flag=false;
+        try{
+             String q = "insert into post(title,pcontent,pcode,ppic,catid) values (?,?,?,?,?)";
+             PreparedStatement pstmt=con.prepareStatement(q);
+             pstmt.setString(1, p.getTitle());
+             pstmt.setString(2, p.getpContent());
+             pstmt.setString(3, p.getpCode());
+             pstmt.setString(4, p.getpPic());
+             pstmt.setInt(5, p.getCatId());
+             pstmt.executeUpdate();
+             flag=true;
+             
+        }catch(Exception e){
+          e.printStackTrace();
+        }
+        return flag;
+    }
+    
 }

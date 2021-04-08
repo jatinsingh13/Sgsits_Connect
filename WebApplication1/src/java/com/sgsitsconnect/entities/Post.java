@@ -17,6 +17,7 @@ public class Post {
     private String pPic;
     private Timestamp pDate;
     private int catId;
+    //private int userId; Add to constructor when u get the login module bulid getter setter
     
     //constructors
     

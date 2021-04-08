@@ -1,55 +1,78 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.sgsitsconnet.servlets;
 
-//import com.tech.blog.dao.PostDao;
-//import com.tech.blog.entities.Post;
-//import com.tech.blog.entities.User;
-//import com.tech.blog.helper.ConnectionProvider;
-//import com.tech.blog.helper.Helper;
+import com.sgsitsconnect.dao.PostDAO;
+import com.sgsitsconnect.entities.Post;
+import com.sgsitsconnect.helper.ConnectionProvider;
+import com.sgsitsconnect.helper.Helper;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
-import javax.servlet.annotation.MultipartConfig;
 
+/**
+ *
+ * @author jatin
+ */
 @MultipartConfig
 public class AddPostServlet extends HttpServlet {
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
+            /* TODO output your page here. You may use following sample code. */
+       
+            //fetching data from form
             int cid=Integer.parseInt(request.getParameter("cid"));
-             
-            String pTitle=request.getParameter("pTitle");
-            String pContent=request.getParameter("pContent");
-            String pCode=request.getParameter("pCode");
-            Part part;
-            part = request.getPart("pic");
             
+            String ptitle=request.getParameter("ptitle");
             
-            HttpSession session=request.getSession();
-            //getting currentuserid
+            String pcontent=request.getParameter("pcontent");
+            
+            String pcode=request.getParameter("pcode");
+            
+            Part part=request.getPart("pimage");
+        /*    
+            Getting current user id 
+            HttpSession seesion=request.getSession();
             User user=(User) session.getAttribute("currentUser");
+            user.getId()
+        */    
+            out.println(part.getSubmittedFileName());
+            out.println("Your post title is "+ ptitle);
             
+            Post p=new Post(ptitle,pcontent,pcode,part.getSubmittedFileName(),null,cid);
             
-            Post p =new Post(pTitle,pContent,pCode,part.getSubmittedFileName(),null,cid,user.getId());            
-            PostDao dao=new PostDao(ConnectionProvider.getConnection());
-            if(dao.savePost(p))
-            {
+            //call function from postDAO savePost function
+            PostDAO dao=new PostDAO(ConnectionProvider.getConnection());
+            
+            if(dao.savePost(p)){
                 
-               
-                String oldFilePath=request.getRealPath("/")+"blog_pics"+File.separator+part.getSubmittedFileName();
-                Helper.saveFile(part.getInputStream(), oldFilePath);
-            
-                            out.println("done");           
+                String pathBlog=request.getRealPath("/")+"blog_pic"+File.separator+part.getSubmittedFileName();
+                Helper.saveFile(part.getInputStream(),pathBlog);
+                out.println("Post added");
+            }else{
+                out.println("error from addpost");
             }
-            else
-            {
-                out.println("error");
-            }          
         }
     }
 
